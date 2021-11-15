@@ -7,7 +7,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:markdown/markdown.dart' as md;
+import 'package:markd/markdown.dart' as md;
 import '../shared/markdown_demo_widget.dart';
 
 // ignore_for_file: public_member_api_docs
