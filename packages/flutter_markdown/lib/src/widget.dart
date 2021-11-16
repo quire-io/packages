@@ -41,7 +41,7 @@ typedef MarkdownImageBuilder = Widget Function(
 /// Signature for custom checkbox widget.
 ///
 /// Used by [MarkdownWidget.checkboxBuilder]
-typedef MarkdownCheckboxBuilder = Widget Function(bool value);
+typedef MarkdownCheckboxBuilder = Widget Function(md.Element element, bool value);
 
 /// Signature for custom bullet widget.
 ///
@@ -52,6 +52,12 @@ typedef MarkdownBulletBuilder = Widget Function(int index, BulletStyle style);
 ///
 /// Used by [MarkdownWidget.bulletBuilder]
 typedef BlockElementWrapper = Widget? Function(md.Element element, Widget child);
+
+/// Provides a chance to use custom parse rule.
+typedef MarkdownTextParser = List<md.Node> Function(String data);
+
+/// Provides a chance to post process text content.
+typedef MarkdownTextProcessor = TextSpan Function(String? last, String? lastSecond, TextStyle? style, String? text, GestureRecognizer? recognizer);
 
 /// Enumeration sent to the user when calling [MarkdownBulletBuilder]
 ///
@@ -123,11 +129,24 @@ abstract class MarkdownElementBuilder {
       null;
 }
 
-/// this is custmized version of [MarkdownElementBuilder] to fix Quire usage
-abstract class EnhancedMarkdownElementBuilder extends MarkdownElementBuilder {
-  /// called when the block element is visited
-  /// we can wrap this generated child with this callback
-  Widget? visitGeneratedBlockElement(md.Element element, Widget child, TextStyle? preferredStyle) => null;
+/// including all customized feature for Quire use
+class CustomizedMarkdownHandler {
+  /// init
+  CustomizedMarkdownHandler({
+    required this.blockElementWrapper,
+    required this.markdownParser,
+    required this.wrapAlignment,
+    // required this.textProcessor
+  });
+
+  /// used to wrap element, used in Quire
+  final BlockElementWrapper blockElementWrapper;
+
+  /// Called to parse markdown text to markdown nodes
+  final MarkdownTextParser markdownParser;
+
+  /// Called to process each markdown text and return
+  // final MarkdownTextProcessor textProcessor;
 }
 
 /// Enum to specify which theme being used when creating [MarkdownStyleSheet]
@@ -218,7 +237,7 @@ abstract class MarkdownWidget extends StatefulWidget {
     this.listItemCrossAxisAlignment =
         MarkdownListItemCrossAxisAlignment.baseline,
     this.softLineBreak = false,
-    this.blockElementWrapper
+    this.customizedMarkdownHandler
   });
 
   /// The Markdown to display.
@@ -319,8 +338,8 @@ abstract class MarkdownWidget extends StatefulWidget {
   /// specification on soft line breaks when lines of text are joined.
   final bool softLineBreak;
 
-  /// used to wrap element, used in Quire
-  final BlockElementWrapper? blockElementWrapper;
+  /// Called to get customized function for Quire
+  final CustomizedMarkdownHandler? customizedMarkdownHandler;
 
   /// Subclasses should override this function to display the given children,
   /// which are the parsed representation of [data].
@@ -372,9 +391,14 @@ class _MarkdownWidgetState extends State<MarkdownWidget>
       encodeHtml: false,
     );
 
+    List<md.Node> astNodes;
     // Parse the source Markdown data into nodes of an Abstract Syntax Tree.
-    final List<String> lines = const LineSplitter().convert(widget.data);
-    final List<md.Node> astNodes = document.parseLines(lines);
+    if (widget.customizedMarkdownHandler != null) {
+      astNodes = widget.customizedMarkdownHandler!.markdownParser(widget.data);
+    } else {
+      final List<String> lines = const LineSplitter().convert(widget.data);
+      astNodes = document.parseLines(lines);
+    }
 
     // Configure a Markdown widget builder to traverse the AST nodes and
     // create a widget tree based on the elements.
@@ -393,7 +417,7 @@ class _MarkdownWidgetState extends State<MarkdownWidget>
       onSelectionChanged: widget.onSelectionChanged,
       onTapText: widget.onTapText,
       softLineBreak: widget.softLineBreak,
-      blockElementWrapper: widget.blockElementWrapper
+      customizedMarkdownHandler: widget.customizedMarkdownHandler
     );
 
     _children = builder.build(astNodes);
@@ -470,7 +494,7 @@ class MarkdownBody extends MarkdownWidget {
     this.shrinkWrap = true,
     super.fitContent = true,
     super.softLineBreak,
-    super.blockElementWrapper,
+    super.customizedMarkdownHandler,
   });
 
   /// If [shrinkWrap] is `true`, [MarkdownBody] will take the minimum height
@@ -528,7 +552,7 @@ class Markdown extends MarkdownWidget {
     this.physics,
     this.shrinkWrap = false,
     super.softLineBreak,
-    super.blockElementWrapper,
+    super.customizedMarkdownHandler,
   });
 
   /// The amount of space by which to inset the children.

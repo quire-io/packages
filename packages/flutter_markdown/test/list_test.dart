@@ -5,6 +5,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:markd/markdown.dart' as md;
 
 import 'utils.dart';
 
@@ -188,7 +189,7 @@ void defineTests() {
       'custom checkbox builder',
       (WidgetTester tester) async {
         const String data = '- [x] Item 1\n- [ ] Item 2';
-        Widget builder(bool checked) => Text('$checked');
+        Widget builder(md.Element _, bool checked) => Text('$checked');
 
         await tester.pumpWidget(
           boilerplate(
