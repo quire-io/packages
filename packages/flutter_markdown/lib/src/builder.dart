@@ -690,7 +690,7 @@ class MarkdownBuilder implements md.NodeVisitor {
       return;
     }
 
-    WrapAlignment blockAlignment = WrapAlignment.start;
+    WrapAlignment blockAlignment = customizedMarkdownHandler?.wrapAlignment ?? WrapAlignment.start;
     TextAlign textAlign = TextAlign.start;
     EdgeInsets textPadding = EdgeInsets.zero;
     if (_isBlockTag(_currentBlockTag)) {
@@ -889,7 +889,7 @@ class MarkdownBuilder implements md.NodeVisitor {
       case 'li':
         break;
     }
-    return WrapAlignment.start;
+    return customizedMarkdownHandler?.wrapAlignment ?? WrapAlignment.start;
   }
 
   EdgeInsets _textPaddingForBlockTag(String? blockTag) {

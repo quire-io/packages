@@ -145,6 +145,9 @@ class CustomizedMarkdownHandler {
   /// Called to parse markdown text to markdown nodes
   final MarkdownTextParser markdownParser;
 
+  /// the alignment for rtl
+  final WrapAlignment wrapAlignment;
+
   /// Called to process each markdown text and return
   // final MarkdownTextProcessor textProcessor;
 }
