@@ -78,7 +78,8 @@ void defineTests() {
 
         /// Markdown guide
         expect(styledTextParts[1].text, 'Markdown guide');
-        expect(styledTextParts[1].style!.color, Colors.blue);
+        // we customized the color for Quire
+        // expect(styledTextParts[1].style!.color, Colors.blue);
 
         /// and this is
         expect(styledTextParts[2].text, ' and this is ');
