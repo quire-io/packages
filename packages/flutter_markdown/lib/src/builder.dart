@@ -5,6 +5,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:markd/markdown.dart' as md;
+import 'package:rikulo_commons/util.dart' as common;
 
 import '_functions_io.dart' if (dart.library.js_interop) '_functions_web.dart';
 import 'style_sheet.dart';
@@ -383,6 +384,7 @@ class MarkdownBuilder implements md.NodeVisitor {
 
     // Define trim text function to remove spaces from text elements in
     // accordance with Markdown specifications.
+    // ignore: unused_element
     String trimText(String text) {
       // The leading spaces pattern is used to identify spaces
       // at the beginning of a line of text.
@@ -431,7 +433,7 @@ class MarkdownBuilder implements md.NodeVisitor {
               ? styleSheet.blockquote!.merge(_inlines.last.style).copyWith(color: styleSheet.blockquote!.color)
               : _inlines.last.tag == 'u' ? _inlines.last.style?.copyWith(decoration: TextDecoration.underline)
               : _inlines.last.style,
-          text: _isInBlockquote ? text.text : trimText(text.text),
+          text: _isInBlockquote ? text.text : common.XmlUtil.decode(text.text), //trimText(text.text),
           recognizer: _linkHandlers.isNotEmpty ? _linkHandlers.last : null,
         ),
         textAlign: _textAlignForBlockTag(_currentBlockTag),
