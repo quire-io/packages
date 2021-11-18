@@ -249,8 +249,19 @@ class MarkdownBuilder implements md.NodeVisitor {
       final bool isInlineBlock = _isInlineBlock(tag);
       _addAnonymousBlockIfNeeded(isInlineBlock);
 
-      if (!isInlineBlock)
+      if (isInlineBlock) {
+        //the idea is when we have the last inline block we should add a more \n for it
+        //since the last block only has a \n, and it should be P, which will have a \n and another \n
+        //to represent the margin.
+        if (_inlineWidgets.isNotEmpty && _inlineWidgets.last is SelectableText)
+          _inlineWidgets.add(_buildRichText(TextSpan(
+            // we only simulate a P if last one is an inline element
+            text: '\n',
+            style: styleSheet.styles[tag]
+          )));
+      } else {
         _flushBlock();
+      }
 
       if (_isListTag(tag)) {
         _listIndents.add(tag);
@@ -548,8 +559,10 @@ class MarkdownBuilder implements md.NodeVisitor {
 
       if (isInlineBlock) {
         _inlineWidgets.add(_buildRichText(TextSpan(
-          // we only simulate a P if last one is an inline element
-          text: _inlineWidgets.isNotEmpty && _inlineWidgets.last is SelectableText ? '\n\n' : '\n',
+          // see another similar block in the visitElementBefore
+          // since we don't know if the following block is a inline text block,
+          // so we leave adding more \n to the next node
+          text: '\n',
           style: styleSheet.styles[tag]
         )));
       } else {
@@ -780,10 +793,21 @@ class MarkdownBuilder implements md.NodeVisitor {
 
   void _addBlockChild(Widget child) {
     final _BlockElement parent = _blocks.last;
+    bool isLastTextWrap = false;
     if (parent.children.isNotEmpty) {
+      isLastTextWrap = parent.children.last is Wrap;
       parent.children.add(SizedBox(height: styleSheet.blockSpacing));
     }
+    
     parent.children.add(child);
+
+    //in this lib, the wrap always contains a list of text inline block.
+    //and the wrap will be added the last margin. so when we get the non inline block,
+    //and the the last element before it is a ineline block, we should make sure the symmetric
+    //margin to be added.
+    if (isLastTextWrap)
+      _inlineWidgets.add(_buildRichText(const TextSpan(text: '')));//this will trigger a new line margin at visitElementBefore in inline case
+
     parent.nextListIndex += 1;
   }
 
