@@ -59,6 +59,9 @@ typedef MarkdownTextParser = List<md.Node> Function(String data);
 /// Provides a chance to post process text content.
 typedef MarkdownTextProcessor = TextSpan Function(String? last, String? lastSecond, TextStyle? style, String? text, GestureRecognizer? recognizer);
 
+/// Provides a chance to wrap a inline style for tag.
+typedef MarkdownInlineStyleWrapper = TextStyle Function(String tag, TextStyle? style, Map<String, String> attributes);
+
 /// Enumeration sent to the user when calling [MarkdownBulletBuilder]
 ///
 /// Use this to differentiate the bullet styling when building your own.
@@ -137,6 +140,7 @@ class CustomizedMarkdownHandler {
     required this.markdownParser,
     required this.wrapAlignment,
     // required this.textProcessor
+    required this.inlineStyleWrapper
   });
 
   /// used to wrap element, used in Quire
@@ -150,6 +154,9 @@ class CustomizedMarkdownHandler {
 
   /// Called to process each markdown text and return
   // final MarkdownTextProcessor textProcessor;
+
+  /// Provides a chance to wrap a inline style for tag.
+  final MarkdownInlineStyleWrapper inlineStyleWrapper;
 }
 
 /// Enum to specify which theme being used when creating [MarkdownStyleSheet]
