@@ -384,7 +384,14 @@ class MarkdownBuilder implements md.NodeVisitor {
       _inlineWidgets.clear();
 
 
-      final Wrap wrap = Wrap(children: mergedTexts);
+      final Wrap wrap = Wrap(children: mergedTexts.map((w) {
+        return w is SelectableText ? Row(
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Expanded(child: w)
+          ]
+        ) : w;
+      }).toList());
       _addBlockChild(wrap);
     }
   }
