@@ -477,6 +477,9 @@ class MarkdownBuilder implements md.NodeVisitor {
 
     final bool isInlineBlock = _isInlineBlock(tag, outerElement?.tag);
     if (_isBlockTag(tag)) {
+      //flush all _inlineWidgets since we can't merge more widget anymore
+      if (!isInlineBlock)
+        _flushBlock();
       _addAnonymousBlockIfNeeded(isInlineBlock);
 
 
@@ -506,7 +509,7 @@ class MarkdownBuilder implements md.NodeVisitor {
           }
           Widget bullet;
           final dynamic el = element.children![0];
-          if (el is md.Element && el.attributes['type'] == 'checkbox') {
+          if (element.attributes['class'] == 'todo') {
             final bool val = el.attributes.containsKey('checked');
             bullet = _buildCheckbox(element, val);
           } else {
