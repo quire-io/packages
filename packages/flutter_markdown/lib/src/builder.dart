@@ -450,13 +450,16 @@ class MarkdownBuilder implements md.NodeVisitor {
         ),
       );
     } else {
+      //#15023: for a li representing a checkbox, it has the prefix space, we should trim left, 
+      final content = _currentBlockTag == 'ul' && _lastVisitedTag == 'input' ? text.text.trimLeft() : text.text;
+
       child = _buildRichText(
         TextSpan(
           style: _isInBlockquote
               ? styleSheet.blockquote!.merge(_inlines.last.style).copyWith(color: styleSheet.blockquote!.color)
               : _inlines.last.tag == 'u' ? _inlines.last.style?.copyWith(decoration: TextDecoration.underline)
               : _inlines.last.style,
-          text: _isInBlockquote ? text.text : common.XmlUtil.decode(text.text), //trimText(text.text),
+          text: _isInBlockquote ? content : common.XmlUtil.decode(content), //trimText(text.text),
           recognizer: _linkHandlers.isNotEmpty ? _linkHandlers.last : null,
         ),
         textAlign: _textAlignForBlockTag(_currentBlockTag),
