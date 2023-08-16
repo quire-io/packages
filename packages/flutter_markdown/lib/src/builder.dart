@@ -213,6 +213,44 @@ class MarkdownBuilder implements md.NodeVisitor {
 
     for (final md.Node node in nodes) {
       assert(_blocks.length == 1);
+      //Not allow ul in p case
+      //https://stackoverflow.com/a/5681796
+      if (node is md.Element && node.tag == 'p')  {
+        final children = node.children;
+        if (children != null && children.isNotEmpty) {
+          final list = <md.Element>[],
+            nodes = <md.Node>[];
+
+          void flushNodes() {
+            if (nodes.isNotEmpty) {
+              md.Element('p', nodes).accept(this);
+              nodes.clear();
+            }
+          }
+
+          void flushUl() {
+            for (final node in list)
+              node.accept(this);
+            list.clear();
+          }
+
+          for (final child in children) {
+            if (child is md.Element && child.tag == 'ul') {
+              flushNodes();
+              list.add(child);
+            } else {
+              flushUl();
+              nodes.add(child);
+            }
+          }
+
+          flushNodes();
+          flushUl();
+
+          continue;
+        }
+      }
+
       node.accept(this);
     }
 
@@ -222,6 +260,10 @@ class MarkdownBuilder implements md.NodeVisitor {
     assert(_inlines.isEmpty);
     assert(!_isInBlockquote);
     return _blocks.single.children;
+  }
+
+  String? _nodeTag(md.Node node) {
+    return node is md.Element ? node.tag: null;
   }
 
   @override
