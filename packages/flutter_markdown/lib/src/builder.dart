@@ -548,7 +548,7 @@ class MarkdownBuilder implements md.NodeVisitor {
           }
           Widget bullet;
           final dynamic el = element.children![0];
-          if (element.attributes['class'] == 'todo') {
+          if (element.attributes['class'] == 'task-list-item') {
             final bool val = el.attributes.containsKey('checked');
             bullet = _buildCheckbox(element, val);
           } else {
