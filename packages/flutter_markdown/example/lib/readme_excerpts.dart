@@ -6,7 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 
 // #docregion CreateMarkdownWithEmojiExtension
-import 'package:markdown/markdown.dart' as md;
+import 'package:markd/markdown.dart' as md;
 // #enddocregion CreateMarkdownWithEmojiExtension
 
 /// Create a simple `Markdown` wdget.

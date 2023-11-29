@@ -6,7 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:markdown/markdown.dart' as md;
+import 'package:markd/markdown.dart' as md;
 
 import 'utils.dart';
 
