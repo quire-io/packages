@@ -628,7 +628,15 @@ class MarkdownBuilder implements md.NodeVisitor {
         padding = paddingBuilders[tag]!.getPadding();
       }
 
-      if (builders.containsKey(tag)) {
+      if (builders.containsKey(tag)
+        && builders[tag]!.acceptVisitElementAfter(
+          delegate.context,
+          element,
+          styleSheet.styles[tag],
+          parent.style,
+          parent.tag,
+        )
+      ) {
         final Widget? child = builders[tag]!.visitElementAfterWithContext(
           delegate.context,
           element,

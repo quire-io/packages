@@ -104,6 +104,18 @@ abstract class MarkdownElementBuilder {
   /// Called when an Element has been reached, after its children have been
   /// visited.
   ///
+  /// If a builder doesn't want to process it, return false.
+  bool acceptVisitElementAfter(
+    BuildContext context,
+    md.Element element,
+    TextStyle? preferredStyle,
+    TextStyle? parentStyle,
+    String? parentTag,
+  ) => true;
+
+  /// Called when an Element has been reached, after its children have been
+  /// visited.
+  ///
   /// If [MarkdownWidget.styleSheet] has a style with this tag, it will be
   /// passed as [preferredStyle].
   ///
