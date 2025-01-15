@@ -907,9 +907,9 @@ class MarkdownBuilder implements md.NodeVisitor {
         final Padding padding = Padding(padding: textPadding, child: wrap);
         _addBlockChild(padding);
       }
-
-      _inlines.clear();
     }
+
+    _inlines.clear();
   }
 
   /// Extracts all spans from an inline element and merges them into a single list

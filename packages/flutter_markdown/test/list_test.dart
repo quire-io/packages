@@ -160,6 +160,25 @@ void defineTests() {
       },
     );
 
+    testWidgets(
+      'empty task list item',
+          (WidgetTester tester) async {
+        const String data = '- [ ] ';
+        await tester.pumpWidget(
+          boilerplate(
+            const MarkdownBody(data: data),
+          ),
+        );
+
+        final Iterable<Widget> widgets = tester.allWidgets;
+
+        expectTextStrings(widgets, <String>[
+          String.fromCharCode(Icons.check_box_outline_blank.codePoint),
+          '',
+        ]);
+      },
+    );
+
     testWidgets('custom bullet builder', (WidgetTester tester) async {
       const String data = '* Item 1\n* Item 2\n1) Item 3\n2) Item 4';
       Widget builder(int index, BulletStyle style) => Text(
