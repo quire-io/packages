@@ -499,7 +499,7 @@ class MarkdownBuilder implements md.NodeVisitor {
           style: _isInBlockquote
               ? styleSheet.blockquote!.merge(_inlines.last.style).copyWith(color: _inlines.last.tag == 'span' ? null : styleSheet.blockquote!.color)
               : _inlines.last.style,
-          text: _isInBlockquote ? content : common.XmlUtil.decode(content), //trimText(text.text),
+          text: common.XmlUtil.decode(content), //trimText(text.text),
           recognizer: _linkHandlers.isNotEmpty ? _linkHandlers.last : null,
         ),
         textAlign: _textAlignForBlockTag(_currentBlockTag),
