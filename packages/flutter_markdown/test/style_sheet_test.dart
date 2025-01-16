@@ -110,6 +110,11 @@ void defineTests() {
         expect(style.del!.fontSize, cTheme.textTheme.textStyle.fontSize);
         expect(style.del!.decoration, TextDecoration.lineThrough);
 
+        // underline
+        expect(style.underline!.color, cTheme.textTheme.textStyle.color);
+        expect(style.underline!.fontSize, cTheme.textTheme.textStyle.fontSize);
+        expect(style.underline!.decoration, TextDecoration.underline);
+
         // blockqoute
         expect(style.blockquote, cTheme.textTheme.textStyle);
 
@@ -183,6 +188,10 @@ void defineTests() {
         // del
         expect(style.del!.decoration, TextDecoration.lineThrough);
         expect(style.del!.color, theme.textTheme.bodyMedium!.color);
+
+        // underline
+        expect(style.underline!.decoration, TextDecoration.underline);
+        expect(style.underline!.color, theme.textTheme.bodyMedium!.color);
 
         // blockqoute
         expect(style.blockquote, theme.textTheme.bodyMedium);

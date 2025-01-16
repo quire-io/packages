@@ -357,7 +357,12 @@ class MarkdownBuilder implements md.NodeVisitor {
 
       final TextStyle? parentStyle = _inlines.last.style;
       final TextStyle? style = styleSheet.styles[tag];
-      final TextStyle? style0 = style == null ? parentStyle : parentStyle == null ? style : parentStyle.merge(style);
+      final TextStyle? style0 = style == null ? parentStyle : parentStyle == null ? style : parentStyle.merge(style).copyWith(
+        decoration: TextDecoration.combine([
+          parentStyle.decoration ?? TextDecoration.none,
+          style.decoration ?? TextDecoration.none,
+        ]),
+      );
       final TextStyle? mergedStyle = customizedMarkdownHandler?.inlineStyleWrapper(tag, style0, element.attributes) ?? style0;
       _inlines.add(_InlineElement(
         tag,
@@ -493,7 +498,6 @@ class MarkdownBuilder implements md.NodeVisitor {
         TextSpan(
           style: _isInBlockquote
               ? styleSheet.blockquote!.merge(_inlines.last.style).copyWith(color: styleSheet.blockquote!.color)
-              : _inlines.last.tag == 'u' ? _inlines.last.style?.copyWith(decoration: TextDecoration.underline)
               : _inlines.last.style,
           text: _isInBlockquote ? content : common.XmlUtil.decode(content), //trimText(text.text),
           recognizer: _linkHandlers.isNotEmpty ? _linkHandlers.last : null,

@@ -28,6 +28,7 @@ class MarkdownStyleSheet {
     this.em,
     this.strong,
     this.del,
+    this.underline,
     this.blockquote,
     this.img,
     this.checkbox,
@@ -86,6 +87,7 @@ class MarkdownStyleSheet {
           'em': em,
           'strong': strong,
           'del': del,
+          'u': underline,
           'blockquote': blockquote,
           'img': img,
           'table': p,
@@ -121,6 +123,7 @@ class MarkdownStyleSheet {
       em: const TextStyle(fontStyle: FontStyle.italic),
       strong: const TextStyle(fontWeight: FontWeight.bold),
       del: const TextStyle(decoration: TextDecoration.lineThrough),
+      underline: const TextStyle(decoration: TextDecoration.underline),
       blockquote: theme.textTheme.bodyMedium,
       img: theme.textTheme.bodyMedium,
       checkbox: theme.textTheme.bodyMedium!.copyWith(
@@ -216,6 +219,9 @@ class MarkdownStyleSheet {
       del: theme.textTheme.textStyle.copyWith(
         decoration: TextDecoration.lineThrough,
       ),
+      underline: theme.textTheme.textStyle.copyWith(
+        decoration: TextDecoration.underline,
+      ),
       blockquote: theme.textTheme.textStyle,
       img: theme.textTheme.textStyle,
       checkbox: theme.textTheme.textStyle.copyWith(
@@ -299,6 +305,7 @@ class MarkdownStyleSheet {
       em: const TextStyle(fontStyle: FontStyle.italic),
       strong: const TextStyle(fontWeight: FontWeight.bold),
       del: const TextStyle(decoration: TextDecoration.lineThrough),
+      underline: const TextStyle(decoration: TextDecoration.underline),
       blockquote: theme.textTheme.bodyMedium,
       img: theme.textTheme.bodyMedium,
       checkbox: theme.textTheme.bodyMedium!.copyWith(
@@ -360,6 +367,7 @@ class MarkdownStyleSheet {
     TextStyle? em,
     TextStyle? strong,
     TextStyle? del,
+    TextStyle? underline,
     TextStyle? blockquote,
     TextStyle? img,
     TextStyle? checkbox,
@@ -424,6 +432,7 @@ class MarkdownStyleSheet {
       em: em ?? this.em,
       strong: strong ?? this.strong,
       del: del ?? this.del,
+      underline: underline ?? this.underline,
       blockquote: blockquote ?? this.blockquote,
       img: img ?? this.img,
       checkbox: checkbox ?? this.checkbox,
@@ -488,6 +497,7 @@ class MarkdownStyleSheet {
       em: em!.merge(other.em),
       strong: strong!.merge(other.strong),
       del: del!.merge(other.del),
+      underline: underline!.merge(other.underline),
       blockquote: blockquote!.merge(other.blockquote),
       img: img!.merge(other.img),
       checkbox: checkbox!.merge(other.checkbox),
@@ -584,6 +594,9 @@ class MarkdownStyleSheet {
 
   /// The [TextStyle] to use for `del` elements.
   final TextStyle? del;
+
+  /// Potix: The [TextStyle] to use for `u` elements.
+  final TextStyle? underline;
 
   /// The [TextStyle] to use for `blockquote` elements.
   final TextStyle? blockquote;
@@ -721,6 +734,7 @@ class MarkdownStyleSheet {
         other.em == em &&
         other.strong == strong &&
         other.del == del &&
+        other.underline == underline &&
         other.blockquote == blockquote &&
         other.img == img &&
         other.checkbox == checkbox &&
@@ -778,6 +792,7 @@ class MarkdownStyleSheet {
       em,
       strong,
       del,
+      underline,
       blockquote,
       img,
       checkbox,
