@@ -9,10 +9,12 @@ import 'package:flutter/widgets.dart' as widgets;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:in_app_purchase_android/billing_client_wrappers.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
+import 'package:in_app_purchase_android/src/billing_client_wrappers/billing_config_wrapper.dart';
 import 'package:in_app_purchase_android/src/messages.g.dart';
 import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
 import 'package:mockito/mockito.dart';
 
+import 'billing_client_wrappers/billing_client_wrapper_test.dart';
 import 'billing_client_wrappers/billing_client_wrapper_test.mocks.dart';
 import 'billing_client_wrappers/product_details_wrapper_test.dart';
 import 'billing_client_wrappers/purchase_wrapper_test.dart';
@@ -28,8 +30,9 @@ void main() {
     widgets.WidgetsFlutterBinding.ensureInitialized();
 
     mockApi = MockInAppPurchaseApi();
-    when(mockApi.startConnection(any, any)).thenAnswer(
-        (_) async => PlatformBillingResult(responseCode: 0, debugMessage: ''));
+    when(mockApi.startConnection(any, any, any)).thenAnswer((_) async =>
+        PlatformBillingResult(
+            responseCode: PlatformBillingResponse.ok, debugMessage: ''));
     iapAndroidPlatform = InAppPurchaseAndroidPlatform(
         manager: BillingClientManager(
             billingClientFactory: (PurchasesUpdatedListener listener,
@@ -43,13 +46,13 @@ void main() {
   group('connection management', () {
     test('connects on initialization', () {
       //await iapAndroidPlatform.isAvailable();
-      verify(mockApi.startConnection(any, any)).called(1);
+      verify(mockApi.startConnection(any, any, any)).called(1);
     });
 
     test('re-connects when client sends onBillingServiceDisconnected', () {
       iapAndroidPlatform.billingClientManager.client.hostCallbackHandler
           .onBillingServiceDisconnected(0);
-      verify(mockApi.startConnection(any, any)).called(2);
+      verify(mockApi.startConnection(any, any, any)).called(2);
     });
 
     test(
@@ -57,19 +60,18 @@ void main() {
         () async {
       when(mockApi.acknowledgePurchase(any)).thenAnswer(
         (_) async => PlatformBillingResult(
-            responseCode: const BillingResponseConverter()
-                .toJson(BillingResponse.serviceDisconnected),
+            responseCode: PlatformBillingResponse.serviceDisconnected,
             debugMessage: 'disconnected'),
       );
-      when(mockApi.startConnection(any, any)).thenAnswer((_) async {
+      when(mockApi.startConnection(any, any, any)).thenAnswer((_) async {
         // Change the acknowledgePurchase response to success for the next call.
         when(mockApi.acknowledgePurchase(any)).thenAnswer(
           (_) async => PlatformBillingResult(
-              responseCode:
-                  const BillingResponseConverter().toJson(BillingResponse.ok),
+              responseCode: PlatformBillingResponse.ok,
               debugMessage: 'disconnected'),
         );
-        return PlatformBillingResult(responseCode: 0, debugMessage: '');
+        return PlatformBillingResult(
+            responseCode: PlatformBillingResponse.ok, debugMessage: '');
       });
       final PurchaseDetails purchase =
           GooglePlayPurchaseDetails.fromPurchase(dummyUnacknowledgedPurchase)
@@ -77,7 +79,7 @@ void main() {
       final BillingResultWrapper result =
           await iapAndroidPlatform.completePurchase(purchase);
       verify(mockApi.acknowledgePurchase(any)).called(2);
-      verify(mockApi.startConnection(any, any)).called(2);
+      verify(mockApi.startConnection(any, any, any)).called(2);
       expect(result.responseCode, equals(BillingResponse.ok));
     });
   });
@@ -97,13 +99,11 @@ void main() {
   group('queryProductDetails', () {
     test('handles empty productDetails', () async {
       const String debugMessage = 'dummy message';
-      const BillingResponse responseCode = BillingResponse.ok;
+      const PlatformBillingResponse responseCode = PlatformBillingResponse.ok;
       when(mockApi.queryProductDetailsAsync(any))
           .thenAnswer((_) async => PlatformProductDetailsResponse(
                 billingResult: PlatformBillingResult(
-                    responseCode:
-                        const BillingResponseConverter().toJson(responseCode),
-                    debugMessage: debugMessage),
+                    responseCode: responseCode, debugMessage: debugMessage),
                 productDetails: <PlatformProductDetails>[],
               ));
 
@@ -114,13 +114,11 @@ void main() {
 
     test('should get correct product details', () async {
       const String debugMessage = 'dummy message';
-      const BillingResponse responseCode = BillingResponse.ok;
+      const PlatformBillingResponse responseCode = PlatformBillingResponse.ok;
       when(mockApi.queryProductDetailsAsync(any))
           .thenAnswer((_) async => PlatformProductDetailsResponse(
                 billingResult: PlatformBillingResult(
-                    responseCode:
-                        const BillingResponseConverter().toJson(responseCode),
-                    debugMessage: debugMessage),
+                    responseCode: responseCode, debugMessage: debugMessage),
                 productDetails: <PlatformProductDetails>[
                   convertToPigeonProductDetails(dummyOneTimeProductDetails)
                 ],
@@ -142,13 +140,11 @@ void main() {
 
     test('should get the correct notFoundIDs', () async {
       const String debugMessage = 'dummy message';
-      const BillingResponse responseCode = BillingResponse.ok;
+      const PlatformBillingResponse responseCode = PlatformBillingResponse.ok;
       when(mockApi.queryProductDetailsAsync(any))
           .thenAnswer((_) async => PlatformProductDetailsResponse(
                 billingResult: PlatformBillingResult(
-                    responseCode:
-                        const BillingResponseConverter().toJson(responseCode),
-                    debugMessage: debugMessage),
+                    responseCode: responseCode, debugMessage: debugMessage),
                 productDetails: <PlatformProductDetails>[
                   convertToPigeonProductDetails(dummyOneTimeProductDetails)
                 ],
@@ -222,14 +218,12 @@ void main() {
       });
 
       const String debugMessage = 'dummy message';
-      const BillingResponse responseCode = BillingResponse.ok;
+      const PlatformBillingResponse responseCode = PlatformBillingResponse.ok;
 
       when(mockApi.queryPurchasesAsync(any))
           .thenAnswer((_) async => PlatformPurchasesResponse(
                 billingResult: PlatformBillingResult(
-                    responseCode:
-                        const BillingResponseConverter().toJson(responseCode),
-                    debugMessage: debugMessage),
+                    responseCode: responseCode, debugMessage: debugMessage),
                 purchases: <PlatformPurchase>[
                   convertToPigeonPurchase(dummyPurchase),
                 ],
@@ -715,7 +709,7 @@ void main() {
             oldPurchaseDetails: GooglePlayPurchaseDetails.fromPurchase(
                     dummyUnacknowledgedPurchase)
                 .first,
-            prorationMode: ProrationMode.deferred,
+            replacementMode: ReplacementMode.deferred,
           ));
       await iapAndroidPlatform.buyNonConsumable(purchaseParam: purchaseParam);
 
@@ -745,6 +739,25 @@ void main() {
         completer.complete(billingResultWrapper);
       }
       expect(await completer.future, equals(expectedBillingResult));
+    });
+  });
+
+  group('billingConfig', () {
+    test('getCountryCode success', () async {
+      const String expectedCountryCode = 'US';
+      const BillingConfigWrapper expected = BillingConfigWrapper(
+          countryCode: expectedCountryCode,
+          responseCode: BillingResponse.ok,
+          debugMessage: 'dummy message');
+
+      when(mockApi.getBillingConfigAsync())
+          .thenAnswer((_) async => platformBillingConfigFromWrapper(expected));
+      final String countryCode = await iapAndroidPlatform.countryCode();
+
+      expect(countryCode, equals(expectedCountryCode));
+      // Ensure deprecated code keeps working until removed.
+      expect(await iapAndroidPlatform.getCountryCode(),
+          equals(expectedCountryCode));
     });
   });
 }

@@ -39,8 +39,10 @@ class MarkdownStyleSheet {
     this.tableHead,
     this.tableBody,
     this.tableHeadAlign,
+    this.tablePadding,
     this.tableBorder,
     this.tableColumnWidth,
+    this.tableScrollbarThumbVisibility,
     this.tableCellsPadding,
     this.tableCellsDecoration,
     this.tableVerticalAlignment = TableCellVerticalAlignment.middle,
@@ -60,6 +62,7 @@ class MarkdownStyleSheet {
     this.orderedListAlign = WrapAlignment.start,
     this.blockquoteAlign = WrapAlignment.start,
     this.codeblockAlign = WrapAlignment.start,
+    this.superscriptFontFeatureTag,
     @Deprecated('Use textScaler instead.') this.textScaleFactor,
     TextScaler? textScaler,
   })  : assert(
@@ -104,7 +107,7 @@ class MarkdownStyleSheet {
       p: theme.textTheme.bodyMedium,
       pPadding: EdgeInsets.zero,
       code: theme.textTheme.bodyMedium!.copyWith(
-        backgroundColor: theme.cardTheme.color ?? theme.cardColor,
+        backgroundColor: theme.cardTheme.color,
         fontFamily: 'monospace',
         fontSize: theme.textTheme.bodyMedium!.fontSize! * 0.85,
       ),
@@ -136,6 +139,7 @@ class MarkdownStyleSheet {
       tableHead: const TextStyle(fontWeight: FontWeight.w600),
       tableBody: theme.textTheme.bodyMedium,
       tableHeadAlign: TextAlign.center,
+      tablePadding: const EdgeInsets.only(bottom: 4.0),
       tableBorder: TableBorder.all(
         color: theme.dividerColor,
       ),
@@ -175,9 +179,6 @@ class MarkdownStyleSheet {
       p: theme.textTheme.textStyle,
       pPadding: EdgeInsets.zero,
       code: theme.textTheme.textStyle.copyWith(
-        backgroundColor: theme.brightness == Brightness.dark
-            ? CupertinoColors.systemGrey6.darkColor
-            : CupertinoColors.systemGrey6.color,
         fontFamily: 'monospace',
         fontSize: theme.textTheme.textStyle.fontSize! * 0.85,
       ),
@@ -236,6 +237,7 @@ class MarkdownStyleSheet {
       ),
       tableBody: theme.textTheme.textStyle,
       tableHeadAlign: TextAlign.center,
+      tablePadding: const EdgeInsets.only(bottom: 8),
       tableBorder: TableBorder.all(color: CupertinoColors.separator, width: 0),
       tableColumnWidth: const FlexColumnWidth(),
       tableCellsPadding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
@@ -286,7 +288,7 @@ class MarkdownStyleSheet {
       p: theme.textTheme.bodyMedium,
       pPadding: EdgeInsets.zero,
       code: theme.textTheme.bodyMedium!.copyWith(
-        backgroundColor: theme.cardTheme.color ?? theme.cardColor,
+        backgroundColor: theme.cardTheme.color,
         fontFamily: 'monospace',
         fontSize: theme.textTheme.bodyMedium!.fontSize! * 0.85,
       ),
@@ -318,6 +320,7 @@ class MarkdownStyleSheet {
       tableHead: const TextStyle(fontWeight: FontWeight.w600),
       tableBody: theme.textTheme.bodyMedium,
       tableHeadAlign: TextAlign.center,
+      tablePadding: const EdgeInsets.only(bottom: 4.0),
       tableBorder: TableBorder.all(
         color: theme.dividerColor,
       ),
@@ -378,8 +381,10 @@ class MarkdownStyleSheet {
     TextStyle? tableHead,
     TextStyle? tableBody,
     TextAlign? tableHeadAlign,
+    EdgeInsets? tablePadding,
     TableBorder? tableBorder,
     TableColumnWidth? tableColumnWidth,
+    bool? tableScrollbarThumbVisibility,
     EdgeInsets? tableCellsPadding,
     Decoration? tableCellsDecoration,
     TableCellVerticalAlignment? tableVerticalAlignment,
@@ -399,6 +404,7 @@ class MarkdownStyleSheet {
     WrapAlignment? orderedListAlign,
     WrapAlignment? blockquoteAlign,
     WrapAlignment? codeblockAlign,
+    String? superscriptFontFeatureTag,
     @Deprecated('Use textScaler instead.') double? textScaleFactor,
     TextScaler? textScaler,
   }) {
@@ -443,8 +449,10 @@ class MarkdownStyleSheet {
       tableHead: tableHead ?? this.tableHead,
       tableBody: tableBody ?? this.tableBody,
       tableHeadAlign: tableHeadAlign ?? this.tableHeadAlign,
+      tablePadding: tablePadding ?? this.tablePadding,
       tableBorder: tableBorder ?? this.tableBorder,
       tableColumnWidth: tableColumnWidth ?? this.tableColumnWidth,
+      tableScrollbarThumbVisibility: tableScrollbarThumbVisibility,
       tableCellsPadding: tableCellsPadding ?? this.tableCellsPadding,
       tableCellsDecoration: tableCellsDecoration ?? this.tableCellsDecoration,
       tableVerticalAlignment:
@@ -466,6 +474,8 @@ class MarkdownStyleSheet {
       orderedListAlign: orderedListAlign ?? this.orderedListAlign,
       blockquoteAlign: blockquoteAlign ?? this.blockquoteAlign,
       codeblockAlign: codeblockAlign ?? this.codeblockAlign,
+      superscriptFontFeatureTag:
+          superscriptFontFeatureTag ?? this.superscriptFontFeatureTag,
       textScaler: newTextScaler,
       textScaleFactor: nextTextScaleFactor,
     );
@@ -508,8 +518,10 @@ class MarkdownStyleSheet {
       tableHead: tableHead!.merge(other.tableHead),
       tableBody: tableBody!.merge(other.tableBody),
       tableHeadAlign: other.tableHeadAlign,
+      tablePadding: other.tablePadding,
       tableBorder: other.tableBorder,
       tableColumnWidth: other.tableColumnWidth,
+      tableScrollbarThumbVisibility: other.tableScrollbarThumbVisibility,
       tableCellsPadding: other.tableCellsPadding,
       tableCellsDecoration: other.tableCellsDecoration,
       tableVerticalAlignment: other.tableVerticalAlignment,
@@ -530,6 +542,7 @@ class MarkdownStyleSheet {
       blockquoteAlign: other.blockquoteAlign,
       codeblockAlign: other.codeblockAlign,
       textScaleFactor: other.textScaleFactor,
+      superscriptFontFeatureTag: other.superscriptFontFeatureTag,
       // Only one of textScaler and textScaleFactor can be passed. If
       // other.textScaleFactor is non-null, then the sheet was created with a
       // textScaleFactor and the textScaler was derived from that, so should be
@@ -628,11 +641,17 @@ class MarkdownStyleSheet {
   /// The [TextAlign] to use for `th` elements.
   final TextAlign? tableHeadAlign;
 
+  /// The padding to use for `table` elements.
+  final EdgeInsets? tablePadding;
+
   /// The [TableBorder] to use for `table` elements.
   final TableBorder? tableBorder;
 
   /// The [TableColumnWidth] to use for `th` and `td` elements.
   final TableColumnWidth? tableColumnWidth;
+
+  /// The scrollbar thumbVisibility when the table is scrollable.
+  final bool? tableScrollbarThumbVisibility;
 
   /// The padding to use for `th` and `td` elements.
   final EdgeInsets? tableCellsPadding;
@@ -701,6 +720,10 @@ class MarkdownStyleSheet {
   @Deprecated('Use textScaler instead.')
   final double? textScaleFactor;
 
+  /// Custom font feature tag for font which does not support `sups'
+  /// feature to create superscript in footnotes.
+  final String? superscriptFontFeatureTag;
+
   /// A [Map] from element name to the corresponding [TextStyle] object.
   Map<String, TextStyle?> get styles => _styles;
   Map<String, TextStyle?> _styles;
@@ -745,6 +768,7 @@ class MarkdownStyleSheet {
         other.tableHead == tableHead &&
         other.tableBody == tableBody &&
         other.tableHeadAlign == tableHeadAlign &&
+        other.tablePadding == tablePadding &&
         other.tableBorder == tableBorder &&
         other.tableColumnWidth == tableColumnWidth &&
         other.tableCellsPadding == tableCellsPadding &&
@@ -766,6 +790,7 @@ class MarkdownStyleSheet {
         other.orderedListAlign == orderedListAlign &&
         other.blockquoteAlign == blockquoteAlign &&
         other.codeblockAlign == codeblockAlign &&
+        other.superscriptFontFeatureTag == superscriptFontFeatureTag &&
         other.textScaler == textScaler;
   }
 
@@ -803,6 +828,7 @@ class MarkdownStyleSheet {
       tableHead,
       tableBody,
       tableHeadAlign,
+      tablePadding,
       tableBorder,
       tableColumnWidth,
       tableCellsPadding,
@@ -826,6 +852,7 @@ class MarkdownStyleSheet {
       codeblockAlign,
       textScaler,
       textScaleFactor,
+      superscriptFontFeatureTag,
     ]);
   }
 }
