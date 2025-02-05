@@ -1064,7 +1064,7 @@ class MarkdownBuilder implements md.NodeVisitor {
     }
 
     if (keepInlineElements)
-      _inlineWidgets.addAll(mergedTexts);
+      _inlineWidgets.addAll(mergedWidgets);
     return mergedWidgets;
   }
 
