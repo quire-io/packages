@@ -94,6 +94,9 @@ enum BulletStyle {
 
   /// An unordered list.
   unorderedList,
+
+  /// A dash list.
+  dashList,
 }
 
 /// Creates a format [TextSpan] given a string.

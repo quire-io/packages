@@ -564,12 +564,13 @@ class MarkdownBuilder implements md.NodeVisitor {
             element.children!.add(md.Text(''));
           }
           Widget bullet;
-          final dynamic el = element.children![0];
-          if (el is md.Element && element.attributes['class'] == 'task-list-item') {
+          final dynamic el = element.children![0],
+            className = element.attributes['class'];
+          if (el is md.Element && className == 'task-list-item') {
             final bool val = el.attributes.containsKey('checked');
             bullet = _buildCheckbox(element, val);
           } else {
-            bullet = _buildBullet(_listIndents.last);
+            bullet = _buildBullet(_listIndents.last, isDash: className == 'dash-list');
           }
           child = Row(
             mainAxisSize: fitContent ? MainAxisSize.min : MainAxisSize.max,
@@ -835,7 +836,7 @@ class MarkdownBuilder implements md.NodeVisitor {
     );
   }
 
-  Widget _buildBullet(String listTag) {
+  Widget _buildBullet(String listTag, {bool isDash = false}) {
     final int index = _blocks.last.nextListIndex;
     final bool isUnordered = listTag == 'ul';
 
@@ -845,7 +846,9 @@ class MarkdownBuilder implements md.NodeVisitor {
         child: bulletBuilder!(
           MarkdownBulletParameters(
             index: index,
-            style: isUnordered
+            style: isDash
+                ? BulletStyle.dashList
+                : isUnordered
                 ? BulletStyle.unorderedList
                 : BulletStyle.orderedList,
             nestLevel: _listIndents.length - 1,
