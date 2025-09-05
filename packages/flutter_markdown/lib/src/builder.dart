@@ -38,6 +38,12 @@ final Set<String> _inlineBlockTags = <String> {
   'video'
 };
 
+/// Tags that should preserve their original color in blockquotes
+final Set<String> _preserveColorInBlockquoteTags = <String>{
+  'span',
+  'a',
+};
+
 const List<String> _kListTags = <String>['ul', 'ol'];
 
 bool _isBlockTag(String? tag) => _kBlockTags.contains(tag);
@@ -562,7 +568,7 @@ class MarkdownBuilder implements md.NodeVisitor {
       child = _buildRichText(
         TextSpan(
           style: _isInBlockquote
-              ? styleSheet.blockquote!.merge(_inlines.last.style).copyWith(color: _inlines.last.tag == 'span' ? null : styleSheet.blockquote!.color)
+              ? styleSheet.blockquote!.merge(_inlines.last.style).copyWith(color: _preserveColorInBlockquoteTags.contains(_inlines.last.tag) ? null : styleSheet.blockquote!.color)
               : _inlines.last.style,
           text: common.XmlUtil.decode(content), //trimText(text.text),
           recognizer: _linkHandlers.isNotEmpty ? _linkHandlers.last : null,
