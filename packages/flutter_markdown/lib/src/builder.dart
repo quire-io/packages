@@ -631,13 +631,13 @@ class MarkdownBuilder implements md.NodeVisitor {
             element.children!.add(md.Text(''));
           }
           Widget bullet;
-          final dynamic el = element.children![0],
-            className = element.attributes['class'];
-          if (el is md.Element && className == 'task-list-item') {
+          final el = element.children![0],
+            classNames = (element.attributes['class'] ?? '').split(' ');
+          if (el is md.Element && classNames.contains('task-list-item')) {
             final bool val = el.attributes.containsKey('checked');
             bullet = _buildCheckbox(element, val);
           } else {
-            bullet = _buildBullet(_listIndents.last, isDash: className == 'dash-list');
+            bullet = _buildBullet(_listIndents.last, isDash: classNames.contains('dash-list'));
           }
           child = Row(
             mainAxisSize: fitContent ? MainAxisSize.min : MainAxisSize.max,
