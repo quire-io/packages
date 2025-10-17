@@ -301,8 +301,12 @@ abstract class MarkdownWidget extends StatefulWidget {
     this.listItemCrossAxisAlignment =
         MarkdownListItemCrossAxisAlignment.baseline,
     this.softLineBreak = false,
-    this.customizedMarkdownHandler
+    this.customizedMarkdownHandler,
+    this.shrinkWrapHorizontal = false,
   });
+
+  /// Shrink wrap in vertical axis if true.
+  final bool shrinkWrapHorizontal;
 
   /// The Markdown to display.
   final String data;
@@ -486,7 +490,8 @@ class _MarkdownWidgetState extends State<MarkdownWidget>
       onSelectionChanged: widget.onSelectionChanged,
       onTapText: widget.onTapText,
       softLineBreak: widget.softLineBreak,
-      customizedMarkdownHandler: widget.customizedMarkdownHandler
+      customizedMarkdownHandler: widget.customizedMarkdownHandler,
+      shrinkWrapHorizontal: widget.shrinkWrapHorizontal,
     );
 
     _children = builder.build(astNodes);
@@ -562,6 +567,7 @@ class MarkdownBody extends MarkdownWidget {
     super.paddingBuilders,
     super.listItemCrossAxisAlignment,
     this.shrinkWrap = true,
+    super.shrinkWrapHorizontal,
     super.fitContent = true,
     super.softLineBreak,
     super.customizedMarkdownHandler,

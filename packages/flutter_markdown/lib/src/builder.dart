@@ -158,11 +158,14 @@ class MarkdownBuilder implements md.NodeVisitor {
     this.onTapText,
     this.softLineBreak = false,
     this.customizedMarkdownHandler,
+    this.shrinkWrapHorizontal = false,
   }) : assert(imageBuilder == null || sizedImageBuilder == null,
             'Only one of imageBuilder or sizedImageBuilder may be specified.');
 
   /// A delegate that controls how link and `pre` elements behave.
   final MarkdownBuilderDelegate delegate;
+
+  final bool shrinkWrapHorizontal;
 
   /// If true, the text is selectable.
   ///
@@ -493,9 +496,9 @@ class MarkdownBuilder implements md.NodeVisitor {
 
       final Wrap wrap = Wrap(children: mergedTexts.map((w) {
         return w is SelectableText ? Row(
-          mainAxisSize: MainAxisSize.max,
+          mainAxisSize: shrinkWrapHorizontal ? MainAxisSize.min : MainAxisSize.max,
           children: [
-            Expanded(child: w)
+            Flexible(child: w)
           ]
         ) : w;
       }).toList());
