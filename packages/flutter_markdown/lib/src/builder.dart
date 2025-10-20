@@ -261,6 +261,8 @@ class MarkdownBuilder implements md.NodeVisitor {
   String? _lastVisitedTag;
   bool _isInBlockquote = false;
 
+  bool _isBuildingLastNode = false;
+
   /// Returns widgets that display the given Markdown nodes.
   ///
   /// The returned widgets are typically used as children in a [ListView].
@@ -279,9 +281,10 @@ class MarkdownBuilder implements md.NodeVisitor {
     });
 
     _blocks.add(_BlockElement(null));
-
+    _isBuildingLastNode = false;
     for (final md.Node node in nodes) {
       assert(_blocks.length == 1);
+      _isBuildingLastNode = node == nodes.last;
       //Not allow ul in p case
       //https://stackoverflow.com/a/5681796
       if (node is md.Element && node.tag == 'p')  {
@@ -712,6 +715,8 @@ class MarkdownBuilder implements md.NodeVisitor {
         child = child0;
 
       if (isInlineBlock) {
+        // #20591: prevent applying extra \n for the last inline block
+        if (!_isBuildingLastNode) {
         _inlineWidgets.add(_buildRichText(TextSpan(
           // see another similar block in the visitElementBefore
           // since we don't know if the following block is a inline text block,
@@ -719,6 +724,7 @@ class MarkdownBuilder implements md.NodeVisitor {
           text: '\n',
           style: styleSheet.styles[tag]
         )));
+        }
       } else {
         _addBlockChild(child);
       }
